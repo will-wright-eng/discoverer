@@ -1,0 +1,7 @@
+{
+    "name": "web-app",
+    "host": "test-webapp",
+    "port": 3000,
+    "path": "/app",
+    "protocol": "http"
+}

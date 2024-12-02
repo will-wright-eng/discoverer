@@ -1,0 +1,7 @@
+{
+    "name": "api",
+    "host": "test-api",
+    "port": 8080,
+    "path": "/api",
+    "protocol": "http"
+}

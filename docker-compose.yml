@@ -1,0 +1,49 @@
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./services:/services
+      - nginx_run:/var/run/nginx/
+    depends_on:
+      - discoverer
+      - test-api
+      - test-webapp
+
+  discoverer:
+    build: .
+    volumes:
+      - ./services:/services
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - nginx_run:/var/run/nginx/
+    environment:
+      - SERVICES_DIR=/services
+      - NGINX_CONF_PATH=/etc/nginx/nginx.conf
+      - NGINX_PID_PATH=/var/run/nginx/nginx.pid
+    healthcheck:
+      test: ["CMD", "ls", "/services"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  test-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: go run cmd/test-service/main.go
+    environment:
+      - PORT=8080
+
+  test-webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: go run cmd/test-service/main.go
+    environment:
+      - PORT=3000
+
+volumes:
+  nginx_run:
